@@ -56,6 +56,10 @@ namespace hpx { namespace lcos { namespace local
             util::unlock_guard<std::unique_lock<mutex> > unlock(lock);
 
             cond_.wait(l, ec);
+
+            // we need to unlock our internal mutex first here, to avoid a locks
+            // held during suspension error.
+            l.unlock();
         }
 
         template <class Predicate>
@@ -82,6 +86,10 @@ namespace hpx { namespace lcos { namespace local
 
             threads::thread_state_ex_enum const reason =
                 cond_.wait_until(l, abs_time, ec);
+
+            // we need to unlock our internal mutex first here, to avoid a locks
+            // held during suspension error.
+            l.unlock();
 
             if (ec) return cv_status::error;
 
@@ -153,6 +161,9 @@ namespace hpx { namespace lcos { namespace local
             util::unlock_guard<Lock> unlock(lock);
 
             cond_.wait(l, ec);
+            // we need to unlock our internal mutex first here, to avoid a locks
+            // held during suspension error.
+            l.unlock();
         }
 
         template <class Lock, class Predicate>
@@ -179,6 +190,10 @@ namespace hpx { namespace lcos { namespace local
 
             threads::thread_state_ex_enum const reason =
                 cond_.wait_until(l, abs_time, ec);
+
+            // we need to unlock our internal mutex first here, to avoid a locks
+            // held during suspension error.
+            l.unlock();
 
             if (ec) return cv_status::error;
 
